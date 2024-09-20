@@ -76,6 +76,7 @@ public class ClienteActivity extends AppCompatActivity {
 
     public void salvarCliente(View c){
         ContentValues registros = new ContentValues();
+
         registros.put("nome", etNome.getText().toString());
         registros.put("cpf", etCpf.getText().toString());
         registros.put("email", etEmail.getText().toString());
@@ -91,6 +92,28 @@ public class ClienteActivity extends AppCompatActivity {
 
         banco.insert("Cliente", null, registros);
         Toast.makeText(this, "Registro Incluído com Sucesso!", Toast.LENGTH_LONG).show();
+    }
+
+    public void alterarCliente(View v){
+        int key = Integer.parseInt(etCodigo.getText().toString());
+        ContentValues registros = new ContentValues();
+
+        registros.put("nome", etNome.getText().toString());
+        registros.put("cpf", etCpf.getText().toString());
+        registros.put("email", etEmail.getText().toString());
+        registros.put("telefone", etTelefone.getText().toString());
+        registros.put("logradouro", etLogradouro.getText().toString());
+        registros.put("numero", etNumero.getText().toString());
+        registros.put("complemento", etComplemento.getText().toString());
+        registros.put("bairro", etBairro.getText().toString());
+        registros.put("cidade", etCidade.getText().toString());
+        registros.put("estado", etEstado.getText().toString());
+        registros.put("cep", etCep.getText().toString());
+        registros.put("diaVencimento", etDiaVencimento.getText().toString());
+
+        banco.update("Cliente", registros, "_id = " + key, null);
+        Toast.makeText(this, "Registro Alterado com Sucesso!", Toast.LENGTH_LONG).show();
+
     }
 
     public void excluirCliente(View v){

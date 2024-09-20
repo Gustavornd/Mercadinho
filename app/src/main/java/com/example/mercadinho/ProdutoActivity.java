@@ -44,6 +44,7 @@ public class ProdutoActivity extends AppCompatActivity {
 
             banco = this.openOrCreateDatabase("banco", Context.MODE_PRIVATE, null);
 
+            //banco.execSQL("DROP TABLE IF EXISTS Produto");
             banco.execSQL("CREATE TABLE IF NOT EXISTS Produto (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "descricao TEXT NOT NULL, " +
@@ -86,7 +87,7 @@ public class ProdutoActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
                 int key = Integer.parseInt(etExcluir.getText().toString());
-                banco.delete("Protudo", "_id = " + key, null);
+                banco.delete("Produto", "_id = " + key, null);
                 Toast.makeText(ProdutoActivity.this, "Registro Excluido com Sucesso!", Toast.LENGTH_LONG).show();
             }
         });
