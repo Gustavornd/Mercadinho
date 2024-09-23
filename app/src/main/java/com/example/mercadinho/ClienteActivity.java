@@ -108,6 +108,7 @@ public class ClienteActivity extends AppCompatActivity {
 
         banco.insert("Cliente", null, registros);
         Toast.makeText(this, "Registro Incluído com Sucesso!", Toast.LENGTH_LONG).show();
+        limpaTudo();
     }
 
     public void alterarCliente(View v){
@@ -129,27 +130,44 @@ public class ClienteActivity extends AppCompatActivity {
 
         banco.update("Cliente", registros, "_id = " + key, null);
         Toast.makeText(this, "Registro Alterado com Sucesso!", Toast.LENGTH_LONG).show();
-
     }
 
-    public void excluirCliente(View v){
+
+    public void excluirCliente(View v) {
         final EditText etExcluir = new EditText(getApplicationContext());
         etExcluir.setTextColor(Color.BLACK);
+
         AlertDialog.Builder telaExcluir = new AlertDialog.Builder(this);
         telaExcluir.setTitle("Excluir");
-        telaExcluir.setMessage("Código a ser excluido: ");
+        telaExcluir.setMessage("Código a ser excluído: ");
         telaExcluir.setView(etExcluir);
         telaExcluir.setNegativeButton("Cancelar", null);
         telaExcluir.setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
                 int key = Integer.parseInt(etExcluir.getText().toString());
-                banco.delete("Cliente", "_id = " + key, null);
-                Toast.makeText(ClienteActivity.this, "Registro Excluido com Sucesso!", Toast.LENGTH_LONG).show();
+
+                // Verificar se o cliente possui alguma compra associada
+                Cursor cursor = banco.rawQuery("SELECT COUNT(*) FROM Compra WHERE idCliente = ?", new String[]{String.valueOf(key)});
+                if (cursor.moveToFirst()) {
+                    int count = cursor.getInt(0);
+                    if (count > 0) {
+                        // O cliente possui compras associadas
+                        Toast.makeText(ClienteActivity.this, "Não é possível excluir. Cliente possui compras associadas!", Toast.LENGTH_LONG).show();
+                    } else {
+                        // O cliente não possui compras, pode ser excluído
+                        banco.delete("Cliente", "_id = ?", new String[]{String.valueOf(key)});
+                        Toast.makeText(ClienteActivity.this, "Registro excluído com sucesso!", Toast.LENGTH_LONG).show();
+                        limpaTudo();  // Limpar os campos após a exclusão
+                    }
+                }
+                cursor.close();  // Fechar o cursor após a operação
             }
         });
+
         telaExcluir.show();
     }
+
 
     public void pesquisarCliente(View v){
         final EditText etPesquisa = new EditText(getApplicationContext());
@@ -206,6 +224,22 @@ public class ClienteActivity extends AppCompatActivity {
     public void listarCliente(View v){
         Intent intencao = new Intent(ClienteActivity.this, ListaClienteActivity.class);
         startActivity(intencao);
+    }
+
+    public void limpaTudo(){
+        etCodigo.setText("");
+        etNome.setText("");
+        etCpf.setText("");
+        etEmail.setText("");
+        etTelefone.setText("");
+        etLogradouro.setText("");
+        etNumero.setText("");
+        etComplemento.setText("");
+        etBairro.setText("");
+        etCidade.setText("");
+        etEstado.setText("");
+        etCep.setText("");
+        etDiaVencimento.setText("");
     }
 
 }

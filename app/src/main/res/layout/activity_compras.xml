@@ -44,7 +44,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="ID do Cliente"
-                android:minHeight="48dp" />
+                android:minHeight="48dp"
+                android:focusable="false"
+                android:clickable="true"/>
 
             <EditText
                 android:id="@+id/etDataCompra"
@@ -73,7 +75,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="ID do Produto"
-                android:minHeight="48dp" />
+                android:minHeight="48dp"
+                android:focusable="false"
+                android:clickable="true"/>
 
             <EditText
                 android:id="@+id/etQuantidade"

@@ -2,9 +2,11 @@ package com.example.mercadinho;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ public class CompraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compras);
 
+
         etIdCliente = findViewById(R.id.etIdCliente);
         etDataCompra = findViewById(R.id.etDataCompra);
         etValorCompra = findViewById(R.id.etValorCompra);
@@ -44,7 +48,7 @@ public class CompraActivity extends AppCompatActivity {
 
         banco = this.openOrCreateDatabase("banco", Context.MODE_PRIVATE, null);
 
-        banco.execSQL("DROP TABLE IF EXISTS Compra");
+        //banco.execSQL("DROP TABLE IF EXISTS Compra");
         banco.execSQL("CREATE TABLE IF NOT EXISTS Compra (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "idCliente INTEGER REFERENCES cliente(_id) NOT NULL, " +
@@ -53,7 +57,7 @@ public class CompraActivity extends AppCompatActivity {
                 "dataPagamento DATE);"
         );
 
-        banco.execSQL("DROP TABLE IF EXISTS itemCompra");
+        //banco.execSQL("DROP TABLE IF EXISTS itemCompra");
         banco.execSQL("CREATE TABLE IF NOT EXISTS itemCompra (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "idCompra INTEGER REFERENCES compra(_id) NOT NULL, " +
@@ -62,6 +66,46 @@ public class CompraActivity extends AppCompatActivity {
                 "quantidade REAL NOT NULL, " +
                 "total REAL NOT NULL);"
         );
+
+        etIdCliente.setOnClickListener(v->{
+            List<Cliente> clientes = getClientes();
+
+            // Cria uma lista de nomes de clientes
+            String[] nomesClientes = new String[clientes.size()];
+            for (int i = 0; i < clientes.size(); i++) {
+                nomesClientes[i] = clientes.get(i).getNome();
+            }
+
+            // Cria e mostra o AlertDialog com os nomes dos clientes
+            AlertDialog.Builder builder = new AlertDialog.Builder(CompraActivity.this);
+            builder.setTitle("Selecione um Cliente")
+                    .setItems(nomesClientes, (dialog, which) -> {
+                        // Quando um cliente for selecionado, salva o ID dele no EditText
+                        int clienteId = clientes.get(which).getId();
+                        etIdCliente.setText(String.valueOf(clienteId));
+                    });
+            builder.show();
+        });
+
+        etIdProduto.setOnClickListener(v->{
+            List<Produto> produtos = getProdutos();
+
+            String[] nomesProdutos = new String[produtos.size()];
+            for (int i = 0; i < produtos.size(); i++) {
+                nomesProdutos[i] = produtos.get(i).getDescricao();
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(CompraActivity.this);
+            builder.setTitle("Selecione um Produto")
+                    .setItems(nomesProdutos, (dialog, which) -> {
+                        // Quando um cliente for selecionado, salva o ID dele no EditText
+                        int produtoId = produtos.get(which).getId();
+                        etIdProduto.setText(String.valueOf(produtoId));
+                    });
+            builder.show();
+        });
+
+
     }
 
     public void adicionarItemCompra (View v){
@@ -123,13 +167,30 @@ public class CompraActivity extends AppCompatActivity {
         }
 
         Toast.makeText(this, "Compra salva com sucesso!", Toast.LENGTH_LONG).show();
+        limpaTudo();
     }
 
     public void excluirCompra(View v) {
-        int idCompra = Integer.parseInt(etIdCompra.getText().toString());
-        banco.delete("Compra", "_id = ?", new String[]{String.valueOf(idCompra)});
-        banco.delete("itemCompra", "idCompra = ?", new String[]{String.valueOf(idCompra)});
+        final EditText etExcluir = new EditText(getApplicationContext());
+        etExcluir.setTextColor(Color.BLACK);
+        AlertDialog.Builder telaExcluir = new AlertDialog.Builder(this);
+        telaExcluir.setTitle("Excluir");
+        telaExcluir.setMessage("Código a ser excluido: ");
+        telaExcluir.setView(etExcluir);
+        telaExcluir.setNegativeButton("Cancelar", null);
+        telaExcluir.setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                int key = Integer.parseInt(etExcluir.getText().toString());
+                banco.delete("Compra", "_id = ?", new String[]{String.valueOf(key)});
+                banco.delete("itemCompra", "idCompra = ?", new String[]{String.valueOf(key)});
+                Toast.makeText(CompraActivity.this, "Registro Excluido com Sucesso!", Toast.LENGTH_LONG).show();
+            }
+        });
+        telaExcluir.show();
+
         Toast.makeText(this, "Compra excluída com sucesso!", Toast.LENGTH_LONG).show();
+        limpaTudo();
     }
 
     public void alterarCompra(View v) {
@@ -175,6 +236,8 @@ public class CompraActivity extends AppCompatActivity {
         Intent intent = new Intent(CompraActivity.this, ListaCompraActivity.class);
         startActivity(intent);
     }
+
+
     private void atualizarListaItensCompra() {
         // Criar uma lista de Strings para exibir os itens
         List<String> listaItens = new ArrayList<>();
@@ -194,23 +257,38 @@ public class CompraActivity extends AppCompatActivity {
         lvItensCompra.setAdapter(adapter);
     }
 
-    public void pesquisarCompra(View v) {
-        try {
-            // Obter o ID da compra que será pesquisada
-            int idCompra = Integer.parseInt(etIdCompra.getText().toString());
+    public void pesquisarCompra(View V){
+        final EditText etPesquisa = new EditText(getApplicationContext());
+        etPesquisa.setTextColor(Color.BLACK);
+        AlertDialog.Builder telaPesquisa = new AlertDialog.Builder(this);
+        telaPesquisa.setTitle("Pesquisar");
+        telaPesquisa.setMessage("Código a ser pesquisado: ");
+        telaPesquisa.setView(etPesquisa);
+        telaPesquisa.setNegativeButton("Cancelar", null);
+        telaPesquisa.setPositiveButton("Pesquisar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                executarPesquisa(Integer.parseInt(etPesquisa.getText().toString()));
+            }
+        });
+        telaPesquisa.show();
+    }
 
+    public void executarPesquisa(int id) {
+        try {
             // Pesquisar os dados da compra na tabela Compra
-            Cursor cursorCompra = banco.rawQuery("SELECT * FROM Compra WHERE idCompra = ?", new String[]{String.valueOf(idCompra)});
+            Cursor cursorCompra = banco.rawQuery("SELECT * FROM Compra WHERE _id = ?", new String[]{String.valueOf(id)});
 
             if (cursorCompra.moveToFirst()) {
                 // Se a compra for encontrada, preencher os campos com os dados
+                etIdCompra.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("_id")));
                 etIdCliente.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("idCliente")));
                 etDataCompra.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("dataCompra")));
                 etValorCompra.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("valorCompra")));
                 etDataPagamento.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("dataPagamento")));
 
                 // Agora, pesquisar os itens dessa compra na tabela itemCompra
-                Cursor cursorItens = banco.rawQuery("SELECT * FROM itemCompra WHERE idCompra = ?", new String[]{String.valueOf(idCompra)});
+                Cursor cursorItens = banco.rawQuery("SELECT * FROM itemCompra WHERE idCompra = ?", new String[]{String.valueOf(id)});
 
                 // Limpar a lista de itens para garantir que estamos atualizando com os itens corretos
                 itensCompra.clear();
@@ -242,6 +320,45 @@ public class CompraActivity extends AppCompatActivity {
         }
     }
 
+    void limpaTudo(){
+        etValorCompra.setText("");
+        etQuantidade.setText("");
+        etIdProduto.setText("");
+        etDataCompra.setText("");
+        etDataPagamento.setText("");
+        etIdCompra.setText("");
+        etIdCliente.setText("");
+        itensCompra.clear();
+        atualizarListaItensCompra();
+    }
 
+    private List<Cliente> getClientes() {
+        List<Cliente> clientes = new ArrayList<>();
+
+        Cursor cursor = banco.rawQuery("SELECT _id, nome FROM Cliente", null);
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
+                String nome = cursor.getString(cursor.getColumnIndexOrThrow("nome"));
+                clientes.add(new Cliente(id, nome));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return clientes;
+    }
+
+    private List<Produto> getProdutos(){
+        List<Produto> produtos = new ArrayList<>();
+        Cursor cursor = banco.rawQuery("SELECT _id, descricao FROM Produto", null);
+        if(cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
+                String descricao = cursor.getString(cursor.getColumnIndexOrThrow("descricao"));
+                produtos.add(new Produto(id, descricao));
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        return produtos;
+    }
 
 }

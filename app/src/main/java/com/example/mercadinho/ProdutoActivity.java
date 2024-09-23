@@ -77,6 +77,7 @@ public class ProdutoActivity extends AppCompatActivity {
         registro.put("preco", etPreco.getText().toString());
         banco.insert("Produto", null, registro);
         Toast.makeText(this, "Resgistro Incluído com Sucesso!", Toast.LENGTH_LONG).show();
+        limpaTudo();
     }
 
     public void alterarProduto(View v){
@@ -108,6 +109,7 @@ public class ProdutoActivity extends AppCompatActivity {
             }
         });
         telaExcluir.show();
+        limpaTudo();
     }
 
     public void pesquisarProduto(View v){
@@ -144,5 +146,12 @@ public class ProdutoActivity extends AppCompatActivity {
     public void listarProdutos(View v){
         Intent intencao = new Intent(ProdutoActivity.this, ListaProdutoActivity.class);
         startActivity(intencao);
+    }
+
+    public void limpaTudo(){
+        etCodigo.setText("");
+        etDescricao.setText("");
+        etUnidade.setText("");
+        etPreco.setText("");
     }
 }
