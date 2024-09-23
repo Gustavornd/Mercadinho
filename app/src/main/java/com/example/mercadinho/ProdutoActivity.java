@@ -50,6 +50,22 @@ public class ProdutoActivity extends AppCompatActivity {
                     "descricao TEXT NOT NULL, " +
                     "unidade TEXT NOT NULL, " +
                     "preco REAL NOT NULL);");
+
+//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
+//                    "VALUES ('Arroz 5kg', 'Pacote', 25.90);");
+//
+//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
+//                    "VALUES ('Feijão 1kg', 'Pacote', 7.50);");
+//
+//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
+//                    "VALUES ('Macarrão 500g', 'Pacote', 4.30);");
+//
+//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
+//                    "VALUES ('Óleo de soja 900ml', 'Garrafa', 9.90);");
+//
+//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
+//                    "VALUES ('Açúcar 1kg', 'Pacote', 4.80);");
+
             return insets;
         });
     }

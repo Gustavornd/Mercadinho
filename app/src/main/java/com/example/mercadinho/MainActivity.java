@@ -32,6 +32,16 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+
+        Button viewCompra = findViewById(R.id.btnCompraView);
+        viewCompra.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intencao = new Intent(MainActivity.this, CompraActivity.class);
+                startActivity(intencao);
+            }
+        });
+
     }
 
 }

@@ -70,6 +70,22 @@ public class ClienteActivity extends AppCompatActivity {
                     "cep TEXT(8) NOT NULL," +
                     "diaVencimento TEXT(10) NOT NULL);"
             );
+//
+//            banco.execSQL("INSERT INTO Cliente (nome, cpf, email, telefone, logradouro, numero, complemento, bairro, cidade, estado, cep, diaVencimento) " +
+//                    "VALUES ('João da Silva', '12345678901', 'joao@gmail.com', '21987654321', 'Rua das Flores', '123', 'Apto 1', 'Centro', 'Rio de Janeiro', 'RJ', '20000000', '10');");
+//
+//            banco.execSQL("INSERT INTO Cliente (nome, cpf, email, telefone, logradouro, numero, complemento, bairro, cidade, estado, cep, diaVencimento) " +
+//                    "VALUES ('Maria Oliveira', '23456789012', 'maria@hotmail.com', '21998765432', 'Avenida Brasil', '456', 'Bloco B', 'Zona Sul', 'São Paulo', 'SP', '30000000', '15');");
+//
+//            banco.execSQL("INSERT INTO Cliente (nome, cpf, email, telefone, logradouro, numero, complemento, bairro, cidade, estado, cep, diaVencimento) " +
+//                    "VALUES ('Pedro Santos', '34567890123', 'pedro@yahoo.com', '21987654321', 'Rua Almeida', '789', '', 'Bela Vista', 'Curitiba', 'PR', '40000000', '5');");
+//
+//            banco.execSQL("INSERT INTO Cliente (nome, cpf, email, telefone, logradouro, numero, complemento, bairro, cidade, estado, cep, diaVencimento) " +
+//                    "VALUES ('Ana Souza', '45678901234', 'ana@gmail.com', '21976543210', 'Travessa da Paz', '321', 'Casa 2', 'Centro', 'Belo Horizonte', 'MG', '50000000', '20');");
+//
+//            banco.execSQL("INSERT INTO Cliente (nome, cpf, email, telefone, logradouro, numero, complemento, bairro, cidade, estado, cep, diaVencimento) " +
+//                    "VALUES ('Carlos Lima', '56789012345', 'carlos@gmail.com', '21965432109', 'Rua do Sol', '654', 'Sala 101', 'Jardim', 'Salvador', 'BA', '60000000', '12');");
+
             return insets;
         });
     }

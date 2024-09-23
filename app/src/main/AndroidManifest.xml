@@ -25,6 +25,8 @@
         <activity android:name=".ClienteActivity"></activity>
         <activity android:name=".ListaProdutoActivity"></activity>
         <activity android:name=".ListaClienteActivity"></activity>
+        <activity android:name=".CompraActivity"></activity>
+        <activity android:name=".ListaCompraActivity"></activity>
 
 
     </application>
