@@ -44,27 +44,11 @@ public class ProdutoActivity extends AppCompatActivity {
 
             banco = this.openOrCreateDatabase("banco", Context.MODE_PRIVATE, null);
 
-            //banco.execSQL("DROP TABLE IF EXISTS Produto");
             banco.execSQL("CREATE TABLE IF NOT EXISTS Produto (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "descricao TEXT NOT NULL, " +
                     "unidade TEXT NOT NULL, " +
                     "preco REAL NOT NULL);");
-
-//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
-//                    "VALUES ('Arroz 5kg', 'Pacote', 25.90);");
-//
-//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
-//                    "VALUES ('Feijão 1kg', 'Pacote', 7.50);");
-//
-//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
-//                    "VALUES ('Macarrão 500g', 'Pacote', 4.30);");
-//
-//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
-//                    "VALUES ('Óleo de soja 900ml', 'Garrafa', 9.90);");
-//
-//            banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
-//                    "VALUES ('Açúcar 1kg', 'Pacote', 4.80);");
 
             return insets;
         });
@@ -92,25 +76,46 @@ public class ProdutoActivity extends AppCompatActivity {
         Toast.makeText(this, "Resgistro Alterado com Sucesso!", Toast.LENGTH_LONG).show();
     }
 
-    public void excluirProduto(View v){
+
+    public void excluirProduto(View v) {
         final EditText etExcluir = new EditText(getApplicationContext());
         etExcluir.setTextColor(Color.BLACK);
         AlertDialog.Builder telaExcluir = new AlertDialog.Builder(this);
         telaExcluir.setTitle("Excluir");
-        telaExcluir.setMessage("Código a ser excluido: ");
+        telaExcluir.setMessage("Código do produto a ser excluído: ");
         telaExcluir.setView(etExcluir);
         telaExcluir.setNegativeButton("Cancelar", null);
         telaExcluir.setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
                 int key = Integer.parseInt(etExcluir.getText().toString());
-                banco.delete("Produto", "_id = " + key, null);
-                Toast.makeText(ProdutoActivity.this, "Registro Excluido com Sucesso!", Toast.LENGTH_LONG).show();
+
+                // Verificar se o produto está relacionado a algum itemCompra
+                Cursor cursor = banco.rawQuery("SELECT COUNT(*) FROM itemCompra WHERE idProduto = ?", new String[]{String.valueOf(key)});
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    int count = cursor.getInt(0);
+                    cursor.close();
+
+                    if (count > 0) {
+                        // Produto relacionado a um itemCompra, não pode ser excluído
+                        Toast.makeText(ProdutoActivity.this, "Erro: Produto relacionado a compras, não pode ser excluído!", Toast.LENGTH_LONG).show();
+                    } else {
+                        // Produto não está relacionado, pode ser excluído
+                        int rowsAffected = banco.delete("Produto", "_id = ?", new String[]{String.valueOf(key)});
+                        if (rowsAffected > 0) {
+                            Toast.makeText(ProdutoActivity.this, "Produto excluído com sucesso!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(ProdutoActivity.this, "Erro ao excluir o produto!", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
             }
         });
         telaExcluir.show();
         limpaTudo();
     }
+
 
     public void pesquisarProduto(View v){
         final EditText etPesquisa = new EditText(getApplicationContext());

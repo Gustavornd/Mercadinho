@@ -25,7 +25,7 @@ public class ListaCompraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_lista_produto);
+        setContentView(R.layout.activity_lista_compras);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets)-> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -37,44 +37,15 @@ public class ListaCompraActivity extends AppCompatActivity {
             return insets;
         });
     }
-//    @SuppressLint("deprecation")
-//    private void montarLista(){
-//        Cursor registros = banco.query("Compra", null, null, null, null, null, null, null);
-//        String atributos[] = new String[] {"idCliente", "_id"};
-//        int atributosTela[] = new int[] {android.R.id.text1, android.R.id.text2};
-//        SimpleCursorAdapter adaptador = new SimpleCursorAdapter(getBaseContext(),
-//                android.R.layout.two_line_list_item, registros, atributos, atributosTela);
-//
-//        adaptador.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-//            @Override
-//            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-//                if (view.getId() == android.R.id.text2) {
-//                    // Concatenar "unidade" e "preco"
-//                    @SuppressLint("Range") String id = cursor.getString(cursor.getColumnIndex("_id"));
-//                    @SuppressLint("Range") String cliente = cursor.getString(cursor.getColumnIndex("idCliente"));
-//                    @SuppressLint("Range") String valorCompra = cursor.getString(cursor.getColumnIndex("valorCompra"));
-//                    String textoConcatenado = "Id: " + id + " | Cliente: " + cliente + " | Total: " + valorCompra;
-//
-//                    // Definir o texto concatenado no TextView da segunda linha
-//                    ((TextView) view).setText(textoConcatenado);
-//                    return true; // Informar que o valor foi definido manualmente
-//                }
-//                return false; // Deixe o adaptador lidar com o restante
-//            }
-//        });
-//        lvListar.setAdapter(adaptador);
-//    }
 
     @SuppressLint("deprecation")
     private void montarLista() {
-        // Realizar a consulta com JOIN para obter o nome do cliente
-        String query = "SELECT Compra._id, Compra.valorCompra, Cliente.nome " +
+        String query = "SELECT Compra._id, Compra.valorCompra, Compra.dataCompra, Cliente.nome " +
                 "FROM Compra " +
                 "JOIN Cliente ON Compra.idCliente = Cliente._id";
 
         Cursor registros = banco.rawQuery(query, null);
 
-        // Definir os atributos a serem exibidos na lista
         String[] atributos = new String[]{"nome", "_id"};
         int[] atributosTela = new int[]{android.R.id.text1, android.R.id.text2};
 
@@ -86,17 +57,15 @@ public class ListaCompraActivity extends AppCompatActivity {
             public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
                 if (view.getId() == android.R.id.text2) {
                     @SuppressLint("Range") String id = cursor.getString(cursor.getColumnIndex("_id"));
-                    @SuppressLint("Range") String clienteNome = cursor.getString(cursor.getColumnIndex("nome"));
+                    @SuppressLint("Range") String dataCompra = cursor.getString(cursor.getColumnIndex("dataCompra"));
                     @SuppressLint("Range") String valorCompra = cursor.getString(cursor.getColumnIndex("valorCompra"));
 
-                    // Concatenar o nome do cliente e o valor da compra
-                    String textoConcatenado = "Id: " + id + " | Cliente: " + clienteNome + " | Total: " + valorCompra;
+                    String textoConcatenado = "Id: " + id + " | Data: " + dataCompra + " | Total: " + valorCompra;
 
-                    // Definir o texto concatenado no TextView da segunda linha
                     ((TextView) view).setText(textoConcatenado);
-                    return true; // Informar que o valor foi definido manualmente
+                    return true;
                 }
-                return false; // Deixe o adaptador lidar com o restante
+                return false;
             }
         });
 

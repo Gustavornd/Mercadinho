@@ -19,9 +19,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CompraActivity extends AppCompatActivity {
-    private EditText etIdCliente, etDataCompra, etValorCompra, etDataPagamento, etIdCompra, etIdProduto, etQuantidade;
+    private EditText etIdCliente, etDataCompra, etValorCompra, etDataPagamento, etIdCompra, etIdProduto, etQuantidade, etNomeCliente;
     private SQLiteDatabase banco;
 
     private List<ItemCompra> itensCompra = new ArrayList<>();
@@ -38,6 +39,7 @@ public class CompraActivity extends AppCompatActivity {
 
 
         etIdCliente = findViewById(R.id.etIdCliente);
+        etNomeCliente = findViewById(R.id.etNomeCliente);
         etDataCompra = findViewById(R.id.etDataCompra);
         etValorCompra = findViewById(R.id.etValorCompra);
         etDataPagamento = findViewById(R.id.etDataPagamento);
@@ -84,7 +86,9 @@ public class CompraActivity extends AppCompatActivity {
                     .setItems(nomesClientes, (dialog, which) -> {
                         // Quando um cliente for selecionado, salva o ID dele no EditText
                         int clienteId = clientes.get(which).getId();
+                        String clienteNome = clientes.get(which).getNome();
                         etIdCliente.setText(String.valueOf(clienteId));
+                        etNomeCliente.setText(String.valueOf(clienteNome));
                     });
             builder.show();
         });
@@ -106,8 +110,6 @@ public class CompraActivity extends AppCompatActivity {
                     });
             builder.show();
         });
-
-
     }
 
     public void adicionarItemCompra (View v){
@@ -132,7 +134,7 @@ public class CompraActivity extends AppCompatActivity {
 
             etIdProduto.setText("");
             etQuantidade.setText("");
-            etValorCompra.setText(new String(String.valueOf(valorCompra)));
+            etValorCompra.setText(String.format(Locale.getDefault(), "%.2f", valorCompra));
 
             Toast.makeText(this, "Item adicionado à compra!", Toast.LENGTH_LONG).show();
         } catch (Exception e){
@@ -340,6 +342,7 @@ public class CompraActivity extends AppCompatActivity {
         etDataPagamento.setText("");
         etIdCompra.setText("");
         etIdCliente.setText("");
+        etNomeCliente.setText("");
         itensCompra.clear();
         valorCompra = 0.0;
         atualizarListaItensCompra();

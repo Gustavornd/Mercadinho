@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 
+import java.util.Locale;
+
 public class DetalhesCompraActivity extends AppCompatActivity {
 
     private TextView tvCliente, tvDataCompra, tvValorCompra, tvDataPagamento;
@@ -44,14 +46,14 @@ public class DetalhesCompraActivity extends AppCompatActivity {
         Cursor cursorCompra = banco.rawQuery("SELECT c.idCliente, c.dataCompra, c.valorCompra, c.dataPagamento, cl.nome FROM Compra c JOIN Cliente cl ON c.idCliente = cl._id WHERE c._id = ?", new String[]{String.valueOf(idCompra)});
 
         if (cursorCompra.moveToFirst()) {
-            // Preencher os campos com os dados da compra
             tvCliente.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("nome")));
             tvDataCompra.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("dataCompra")));
-            tvValorCompra.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("valorCompra")));
+            double valorCompra = cursorCompra.getDouble(cursorCompra.getColumnIndexOrThrow("valorCompra"));
+            tvValorCompra.setText(String.format(Locale.getDefault(), "R$ %.2f", valorCompra ));
             tvDataPagamento.setText(cursorCompra.getString(cursorCompra.getColumnIndexOrThrow("dataPagamento")));
         }
 
-        // Buscar os itens da compra com a coluna "_id" já disponível
+
         Cursor cursorItens = banco.rawQuery("SELECT i._id, p.descricao, i.quantidade, i.total FROM itemCompra i JOIN Produto p ON i.idProduto = p._id WHERE i.idCompra = ?", new String[]{String.valueOf(idCompra)});
 
         // Criar um SimpleCursorAdapter para exibir os itens no ListView

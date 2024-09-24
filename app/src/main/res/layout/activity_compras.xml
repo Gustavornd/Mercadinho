@@ -37,6 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="ID da Compra"
+                android:inputType="number"
                 android:minHeight="48dp" />
 
             <EditText
@@ -49,24 +50,34 @@
                 android:clickable="true"/>
 
             <EditText
+                android:id="@+id/etNomeCliente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nome do Cliente"
+                android:minHeight="48dp"
+                android:focusable="false"
+                android:clickable="true"/>
+
+            <EditText
                 android:id="@+id/etDataCompra"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Data da Compra"
+                android:hint="Data da Compra (Ex: 01/01/2024)"
                 android:minHeight="48dp" />
 
             <EditText
                 android:id="@+id/etValorCompra"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Valor da Compra"
+                android:hint="Valor da Compra (Ex: 0.00)"
+                android:inputType="number"
                 android:minHeight="48dp" />
 
             <EditText
                 android:id="@+id/etDataPagamento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Data de Pagamento"
+                android:hint="Data de Pagamento (Ex: 01/01/2024)"
                 android:minHeight="48dp" />
 
             <!-- Seção para adicionar itens à compra -->
@@ -76,6 +87,7 @@
                 android:layout_height="wrap_content"
                 android:hint="ID do Produto"
                 android:minHeight="48dp"
+                android:inputType="number"
                 android:focusable="false"
                 android:clickable="true"/>
 
@@ -83,7 +95,8 @@
                 android:id="@+id/etQuantidade"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Quantidade"
+                android:hint="Quantidade (Ex: 1)"
+                android:inputType="number"
                 android:minHeight="48dp" />
 
             <Button

@@ -140,7 +140,26 @@ public class MainActivity extends AppCompatActivity{
                 banco.execSQL("INSERT INTO Produto (descricao, unidade, preco) " +
                     "VALUES ('Açúcar 1kg', 'Pacote', 4.80);");
 
-                banco.execSQL("UPDATE Compra SET dataPagamento = NULL WHERE dataPagamento = '';\n");
+
+
+                banco.execSQL("INSERT INTO Compra (idCliente, dataCompra, valorCompra, dataPagamento)" +
+                        "VALUES (1, '09/08/2024', 64.30, NULL);");
+
+                banco.execSQL("INSERT INTO itemCompra (idCompra, idProduto, unitario, quantidade, total)" +
+                        "VALUES" +
+                        "((SELECT _id FROM Compra WHERE idCliente = 1 AND dataCompra = '09/08/2024'), 1, 25.90, 2, 51.80)," +
+                        "((SELECT _id FROM Compra WHERE idCliente = 1 AND dataCompra = '09/08/2024'), 2, 7.50, 2, 15.00);");
+
+                banco.execSQL("INSERT INTO Compra (idCliente, dataCompra, valorCompra, dataPagamento)" +
+                        "VALUES (1, '20/09/2024', 63.90, NULL);");
+
+                banco.execSQL("INSERT INTO itemCompra (idCompra, idProduto, unitario, quantidade, total)" +
+                        "VALUES" +
+                        "    ((SELECT _id FROM Compra WHERE idCliente = 1 AND dataCompra = '20/09/2024'), 4, 9.90, 3, 29.70)," +
+                        "    ((SELECT _id FROM Compra WHERE idCliente = 1 AND dataCompra = '20/09/2024'), 5, 4.80, 2, 9.60)," +
+                        "    ((SELECT _id FROM Compra WHERE idCliente = 1 AND dataCompra = '20/09/2024'), 3, 4.30, 6, 25.80);");
+
+                banco.execSQL("UPDATE Compra SET dataPagamento = NULL WHERE dataPagamento = '';");
             }
         });
 

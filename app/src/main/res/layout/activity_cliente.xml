@@ -47,7 +47,7 @@
                 android:id="@+id/etCpf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Cpf"
+                android:hint="Cpf (Ex: 12300045600)"
                 android:inputType="number"
                 android:minHeight="48dp" />
 
@@ -55,14 +55,14 @@
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="E-mail"
+                android:hint="E-mail (exemple@mail.com)"
                 android:minHeight="48dp" />
 
             <EditText
                 android:id="@+id/etTelefone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Telefone"
+                android:hint="Telefone (Ex: 38900001234)"
                 android:inputType="number"
                 android:minHeight="48dp" />
 
@@ -70,7 +70,7 @@
                 android:id="@+id/etLogradouro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Logradouro"
+                android:hint="Logradouro (Ex: Rua, Avenida, etc.)"
                 android:minHeight="48dp" />
 
             <EditText
@@ -113,7 +113,7 @@
                 android:id="@+id/etCep"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Cep"
+                android:hint="Cep (Ex:12345000)"
                 android:inputType="number"
                 android:minHeight="48dp" />
 
@@ -121,7 +121,7 @@
                 android:id="@+id/etDiaVencimento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Dia de Vencimento"
+                android:hint="Dia de Vencimento (Ex: 10)"
                 android:inputType="date"
                 android:minHeight="48dp" />
 

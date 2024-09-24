@@ -1,6 +1,8 @@
 package com.example.mercadinho;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -29,6 +32,8 @@ import java.util.Locale;
 public class RelatorioActivity extends AppCompatActivity {
     private EditText etIdCliente, etNomeCliente;
     private TextView tvTotalReceber, tvTotalAtrasado;
+    ListView lvComprasAtrasadas;
+    double totalAtrasado = 0.0, totalReceber =0.0;
     SQLiteDatabase banco;
 
 
@@ -48,6 +53,7 @@ public class RelatorioActivity extends AppCompatActivity {
         etNomeCliente = findViewById(R.id.etNomeCliente);
         tvTotalReceber = findViewById(R.id.tvTotalReceber);
         tvTotalAtrasado = findViewById(R.id.tvTotalAtrasado);
+        lvComprasAtrasadas = findViewById(R.id.lvComprasAtrasadas);
 
         banco = this.openOrCreateDatabase("banco", Context.MODE_PRIVATE, null);
 
@@ -93,6 +99,17 @@ public class RelatorioActivity extends AppCompatActivity {
             builder.show();
         });
 
+        lvComprasAtrasadas.setOnItemClickListener((parent, view, position, id) -> {
+            String compraSelecionada = (String) parent.getItemAtPosition(position);
+
+            // Extraindo o ID da compra do texto
+            int idCompra = extrairIdCompra(compraSelecionada);
+
+            // Mostrar a janela popup para alterar a data de pagamento
+            mostrarPopupAlterarData(idCompra);
+        });
+
+
     }
 
     private List<Cliente> getClientes() {
@@ -118,9 +135,11 @@ public class RelatorioActivity extends AppCompatActivity {
 
         if (cursor.moveToFirst()) {
             // Verificar se o resultado da soma é nulo
-            double totalReceber = cursor.isNull(cursor.getColumnIndexOrThrow("totalReceber")) ? 0.0
+             totalReceber = cursor.isNull(cursor.getColumnIndexOrThrow("totalReceber")) ? 0.0
                     : cursor.getDouble(cursor.getColumnIndexOrThrow("totalReceber"));
-            tvTotalReceber.setText("Total a Receber: R$ " + totalReceber);
+
+
+            tvTotalReceber.setText(String.format(Locale.getDefault(), "Total a Receber: R$ %.2f", totalReceber));
 
 
             Cursor detalheCursor = banco.rawQuery("SELECT valorCompra, dataPagamento FROM Compra " +
@@ -141,7 +160,7 @@ public class RelatorioActivity extends AppCompatActivity {
 
     @SuppressLint("Range")
     private void carregarComprasAtrasadas(int idCliente) {
-        double totalAtrasado = 0.0;
+
         Cursor cursor = banco.rawQuery("SELECT Compra._id, Compra.idCliente, Compra.dataCompra, Compra.valorCompra, Cliente.nome, Cliente.diaVencimento " +
                 "FROM Compra " +
                 "JOIN Cliente ON Compra.idCliente = Cliente._id " +
@@ -152,6 +171,7 @@ public class RelatorioActivity extends AppCompatActivity {
 
             List<String> comprasAtrasadas = new ArrayList<>();
             Calendar dataAtual = Calendar.getInstance();
+            totalAtrasado = 0.0;
 
             do {
                 int idCompra = cursor.getInt(cursor.getColumnIndex("_id"));
@@ -171,7 +191,6 @@ public class RelatorioActivity extends AppCompatActivity {
                 if (dataCompra != null) {
                     Calendar dataVencimento = Calendar.getInstance();
                     dataVencimento.setTime(dataCompra);
-                    dataVencimento.set(Calendar.DAY_OF_MONTH, diaVencimento);
 
                     if (dataVencimento.before(dataAtual)) {
                         String compraDetalhes = "Id: " + idCompra + " | Valor: R$ " + valorCompra + " | Data Compra: " + dataCompraStr;
@@ -183,15 +202,56 @@ public class RelatorioActivity extends AppCompatActivity {
 
             // Exibir as compras atrasadas na ListView
             ArrayAdapter<String> adaptador = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, comprasAtrasadas);
-            ListView lvComprasAtrasadas = findViewById(R.id.lvComprasAtrasadas);
             lvComprasAtrasadas.setAdapter(adaptador);
-            tvTotalAtrasado.setText("Total em Atraso: R$ "+totalAtrasado);
+            tvTotalAtrasado.setText(String.format(Locale.getDefault(), "Total em atraso: R$ %.2f", totalAtrasado));
 
         } else {
-            tvTotalAtrasado.setText("Total em Atraso: R$ "+totalAtrasado);
+            tvTotalAtrasado.setText(String.format(Locale.getDefault(), "Total em atraso: R$ %.2f", totalAtrasado));
         }
 
         cursor.close();
     }
+
+    private int extrairIdCompra(String compraDetalhes) {
+        String[] detalhes = compraDetalhes.split("\\|");
+        String idParte = detalhes[0].trim(); // "Id: X"
+        return Integer.parseInt(idParte.replace("Id:", "").trim());
+    }
+
+    private void mostrarPopupAlterarData(int idCompra) {
+        // Pega a data atual para ser o valor padrão
+        Calendar calendar = Calendar.getInstance();
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> {
+                    // Quando a data for selecionada, monta a string da data
+                    String dataPagamento = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, month + 1, year);
+
+                    // Chama a função para atualizar a data de pagamento no banco de dados
+                    atualizarDataPagamento(idCompra, dataPagamento);
+                },
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+        datePickerDialog.show();
+    }
+
+    private void atualizarDataPagamento(int idCompra, String dataPagamento) {
+        ContentValues valores = new ContentValues();
+        valores.put("dataPagamento", dataPagamento);
+
+        // Atualiza a compra com o id especificado
+        int linhasAfetadas = banco.update("Compra", valores, "_id = ?", new String[]{String.valueOf(idCompra)});
+
+        if (linhasAfetadas > 0) {
+            Toast.makeText(this, "Data de pagamento atualizada com sucesso!", Toast.LENGTH_SHORT).show();
+            // Atualiza a lista de compras atrasadas após a alteração
+            carregarComprasAtrasadas(Integer.parseInt(etIdCliente.getText().toString()));
+            carregarTotalReceber(Integer.parseInt(etIdCliente.getText().toString()));
+        } else {
+            Toast.makeText(this, "Erro ao atualizar a data de pagamento.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
 }
