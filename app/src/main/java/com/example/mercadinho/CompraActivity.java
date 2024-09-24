@@ -67,6 +67,8 @@ public class CompraActivity extends AppCompatActivity {
                 "total REAL NOT NULL);"
         );
 
+        //banco.execSQL("UPDATE Compra SET dataPagamento = NULL WHERE dataPagamento = '';\n");
+
         etIdCliente.setOnClickListener(v->{
             List<Cliente> clientes = getClientes();
 
@@ -152,7 +154,12 @@ public class CompraActivity extends AppCompatActivity {
         valoresCompra.put("idCliente", etIdCliente.getText().toString());
         valoresCompra.put("dataCompra", etDataCompra.getText().toString());
         valoresCompra.put("valorCompra", etValorCompra.getText().toString());
-        valoresCompra.put("dataPagamento", etDataPagamento.getText().toString());
+
+        if(!etDataPagamento.getText().toString().isEmpty()){
+            valoresCompra.put("dataPagamento", etDataPagamento.getText().toString());
+        } else {
+           valoresCompra.putNull("dataPagamento");
+        }
 
         long idCompra = banco.insert("Compra", null, valoresCompra);
         for (ItemCompra item : itensCompra){
@@ -203,7 +210,12 @@ public class CompraActivity extends AppCompatActivity {
             valoresCompra.put("idCliente", etIdCliente.getText().toString());
             valoresCompra.put("dataCompra", etDataCompra.getText().toString());
             valoresCompra.put("valorCompra", etValorCompra.getText().toString());
-            valoresCompra.put("dataPagamento", etDataPagamento.getText().toString());
+
+            if(!etDataPagamento.getText().toString().isEmpty()){
+                valoresCompra.put("dataPagamento", etDataPagamento.getText().toString());
+            } else {
+                valoresCompra.putNull("dataPagamento");
+            }
 
             // Executar o update da compra no banco de dados
             banco.update("Compra", valoresCompra, "_id = ?", new String[]{String.valueOf(idCompra)});
@@ -329,6 +341,7 @@ public class CompraActivity extends AppCompatActivity {
         etIdCompra.setText("");
         etIdCliente.setText("");
         itensCompra.clear();
+        valorCompra = 0.0;
         atualizarListaItensCompra();
     }
 

@@ -28,6 +28,7 @@
         <activity android:name=".CompraActivity"></activity>
         <activity android:name=".ListaCompraActivity"></activity>
         <activity android:name=".DetalhesCompraActivity"></activity>
+        <activity android:name=".RelatorioActivity"></activity>
 
 
     </application>

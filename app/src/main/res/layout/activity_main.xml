@@ -45,8 +45,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CRUD Compra"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnRelatorio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnClienteView" />
+
+    <Button
+        android:id="@+id/btnRelatorio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Relatório"
+        app:layout_constraintBottom_toTopOf="@id/btnCarregarDados"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnCompraView" />
+
+    <Button
+        android:id="@+id/btnCarregarDados"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Carregar Dados"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnRelatorio" />
 </androidx.constraintlayout.widget.ConstraintLayout>
